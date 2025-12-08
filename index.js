@@ -16,8 +16,8 @@ import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 
 import PazzaFolderRoutes from "./Pazza/Folders/routes.js";
 
-// const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
-const CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz"
+const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
+// const CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz"
 
 const app = express()
 app.use(cors({
