@@ -1,0 +1,72 @@
+import express from 'express';
+import "dotenv/config";
+import cors from "cors";
+import session from "express-session";
+import mongoose from "mongoose";
+
+import Hello from "./Hello.js"
+import Lab5 from './Lab5/index.js';
+import db from "./Kambaz/Database/index.js";
+
+import UserRoutes from "./Kambaz/Users/routes.js";
+import CourseRoutes from "./Kambaz/Courses/routes.js";
+import ModuleRoutes from "./Kambaz/Modules/routes.js";
+import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
+import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
+
+import PazzaFolderRoutes from "./Pazza/Folders/routes.js";
+
+// const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
+const CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz"
+
+const app = express()
+app.use(cors({
+  credentials: true,
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
+}))
+const sessionOptions = {
+  secret: process.env.SESSION_SECRET || "kambaz",
+  resave: false,
+  saveUninitialized: false,
+};
+if (process.env.SERVER_ENV !== "development") {
+  sessionOptions.proxy = true;
+  sessionOptions.cookie = {
+    sameSite: "none",
+    secure: true,
+    domain: process.env.SERVER_URL,
+  };
+}
+app.use(session(sessionOptions));
+app.use(express.json());
+app.use((req, res, next) => {
+  const originalSend = res.send;
+
+  res.send = function (body) {
+    console.log(req.method + " " + req.url + " " + res.statusCode);
+
+    originalSend.call(this, body);
+  };
+  next();
+});
+
+Hello(app)
+Lab5(app)
+
+UserRoutes(app, db);
+CourseRoutes(app, db)
+ModuleRoutes(app, db)
+AssignmentRoutes(app, db)
+EnrollmentRoutes(app, db)
+
+PazzaFolderRoutes(app)
+
+let server = app.listen(process.env.PORT || 4000, () => {
+  console.log('Running HTTP in port:' + process.env.PORT);
+  mongoose.connect(CONNECTION_STRING);
+  console.log(`Using the following env data
+    - process.env.CLIENT_URL: ${process.env.CLIENT_URL}
+    - process.env.SERVER_URL: ${process.env.SERVER_URL}
+    - process.env.SESSION_SECRET: ${process.env.SESSION_SECRET}
+    - Mongoose connected to: ${CONNECTION_STRING}`)
+})
