@@ -15,6 +15,7 @@ import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 
 import PazzaFolderRoutes from "./Pazza/Folders/routes.js";
+import PazzaPostRoutes from './Pazza/Posts/routes.js';
 
 const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
 // const CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz"
@@ -60,6 +61,7 @@ AssignmentRoutes(app, db)
 EnrollmentRoutes(app, db)
 
 PazzaFolderRoutes(app)
+PazzaPostRoutes(app)
 
 let server = app.listen(process.env.PORT || 4000, () => {
   console.log('Running HTTP in port:' + process.env.PORT);
