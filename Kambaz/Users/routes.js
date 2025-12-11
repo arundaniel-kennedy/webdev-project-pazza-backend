@@ -1,8 +1,10 @@
 import UsersDao from "./dao.js";
+import EnrollmentsDao from "../Enrollments/dao.js";
 let currentUser = null;
 
 export default function UserRoutes(app) {
     const dao = UsersDao();
+    const enrollmentDao = EnrollmentsDao();
     const createUser = async (req, res) => {
         const newUser = await dao.createUser(req.body);
         res.json(newUser);
@@ -73,6 +75,16 @@ export default function UserRoutes(app) {
         }
         res.json(currentUser)
     };
+    const findInstructorsForCourse = async (req, res) => {
+        try {
+            const { courseId } = req.params;
+            const usersInCourse = await enrollmentDao.findUsersForCourse(courseId);
+            const instructors = usersInCourse.filter(user => user.role === "FACULTY");
+            res.json(instructors);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching instructors for course" });
+        }
+    };
     app.get("/api/users/:userId", findUserById);
     app.put("/api/users/:userId", updateUser);
     app.delete("/api/users/:userId", deleteUser);
@@ -82,4 +94,5 @@ export default function UserRoutes(app) {
     app.post("/api/users/signout", signout);
     app.post("/api/users", createUser);
     app.get("/api/users", findAllUsers);
+    app.get("/api/users/instructors/:courseId", findInstructorsForCourse);
 }
